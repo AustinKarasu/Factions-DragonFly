@@ -58,9 +58,14 @@ This project is licensed under the GNU License.
 
 ## 📞 Contact
 
-Need help or have suggestions?
+<p align="center">
+  <a href="https://discord.com/users/1165097093480853634">
+    <img src="https://lanyard.cnrad.dev/api/1165097093480853634?theme=dark&bg=005cff&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Hello" alt="Discord: JorgeByte" />
+  </a>
+</p>
 
-[![Discord: JorgeByte](https://lanyard.cnrad.dev/api/1165097093480853634?theme=dark&bg=005cff&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Hello)](https://discord.com/users/1165097093480853634)
-
-[![Discord: AustinKarasu](
-https://lanyard.cnrad.dev/api/927640119723323393?theme=dark&bg=005cff&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Hello)
+<p align="center">
+  <a href="https://discord.com/users/927640119723323393">
+    <img src="https://lanyard.cnrad.dev/api/927640119723323393?theme=dark&bg=005cff&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Hello" alt="Discord: empathyofemptyness" />
+  </a>
+</p>
