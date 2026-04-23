@@ -19,23 +19,40 @@ func (c FactionUnclaim) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
+	handleFactionUnclaim(p, o, c.sessionManager)
+}
 
-	playerFaction, ok := c.sessionManager.GetPlayerFaction(p.UUID())
+func handleFactionUnclaim(p *player.Player, o *cmd.Output, sessionManager *session.Manager) {
+	playerFaction, ok := sessionManager.GetPlayerFaction(p.UUID())
 	if !ok {
-		o.Errorf("§cYou are not in a faction.")
+		if o != nil {
+			o.Errorf("§cYou are not in a faction.")
+		}
+		p.Message("§cYou are not in a faction.")
 		return
 	}
 
-	if playerFaction.Leader != p.UUID() {
-		o.Errorf("§cOnly the faction leader can unclaim territories.")
+	if playerFaction.Leader != p.UUID() && playerFaction.Coleaders[p.UUID()] == "" {
+		if o != nil {
+			o.Errorf("§cOnly the faction leader or co-leaders can unclaim territories.")
+		}
+		p.Message("§cOnly the faction leader or co-leaders can unclaim territories.")
 		return
 	}
 
 	currentChunk := chunk.FromWorldPos(p.Position())
-	if err := c.sessionManager.UnclaimChunk(currentChunk, playerFaction); err != nil {
-		o.Errorf("§cError unclaiming territory: %v", err)
+	if err := sessionManager.UnclaimChunk(currentChunk, playerFaction); err != nil {
+		if o != nil {
+			o.Errorf("§cError unclaiming territory: %v", err)
+		}
+		p.Messagef("§cError unclaiming territory: %v", err)
 		return
 	}
 
-	o.Printf("§aTerritory at %s has been unclaimed.", currentChunk.String())
+	msg := "§aTerritory at " + currentChunk.String() + " has been unclaimed."
+	if o != nil {
+		o.Printf(msg)
+	}
+	p.Message(msg)
+	sessionManager.UpdateScoreboard(p)
 }

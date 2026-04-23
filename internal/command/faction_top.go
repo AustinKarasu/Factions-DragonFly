@@ -1,28 +1,28 @@
 package command
 
 import (
+	"fmt"
+	"slices"
+
 	"github.com/df-mc/dragonfly/server/cmd"
+	"github.com/df-mc/dragonfly/server/player"
+	"github.com/df-mc/dragonfly/server/player/form"
 	"github.com/df-mc/dragonfly/server/world"
 	"github.com/jorgebyte/faction/internal/faction"
-	"github.com/jorgebyte/faction/internal/player"
+	playerdata "github.com/jorgebyte/faction/internal/player"
 	"github.com/jorgebyte/faction/internal/session"
-	"slices"
 )
 
-// TopType is an Enum for the player to choose which ranking to view.
 type TopType string
 
-// Type returns the name of the Enum type.
 func (TopType) Type() string {
 	return "TopType"
 }
 
-// Options returns the valid options for the Enum.
 func (TopType) Options(src cmd.Source) []string {
 	return []string{"player", "faction"}
 }
 
-// FactionTop defines the structure for the /f top <player|faction> command.
 type FactionTop struct {
 	sessionManager *session.Manager
 	Top            cmd.SubCommand `cmd:"top"`
@@ -30,6 +30,16 @@ type FactionTop struct {
 }
 
 func (c FactionTop) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
+	if p, ok := src.(*player.Player); ok {
+		switch c.Category {
+		case "player":
+			openTopPlayersMenu(p, c.sessionManager)
+		case "faction":
+			openTopFactionsMenu(p, c.sessionManager)
+		}
+		return
+	}
+
 	switch c.Category {
 	case "player":
 		c.showPlayerTop(o)
@@ -38,18 +48,14 @@ func (c FactionTop) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 }
 
-// showPlayerTop displays the ranking of the top 10 players.
 func (c FactionTop) showPlayerTop(o *cmd.Output) {
 	allPlayers := c.sessionManager.GetAllPlayersData()
-	slices.SortFunc(allPlayers, func(a, b *player.Data) int {
+	slices.SortFunc(allPlayers, func(a, b *playerdata.Data) int {
 		return b.Power - a.Power
 	})
 
 	o.Printf("§e--- Top 10 Players by Power ---")
-	limit := 10
-	if len(allPlayers) < limit {
-		limit = len(allPlayers)
-	}
+	limit := min(10, len(allPlayers))
 	if limit == 0 {
 		o.Printf("§cThere are no players in the ranking yet.")
 		return
@@ -60,22 +66,16 @@ func (c FactionTop) showPlayerTop(o *cmd.Output) {
 	}
 }
 
-// showFactionTop displays the ranking of the top 10 factions.
 func (c FactionTop) showFactionTop(o *cmd.Output) {
 	allFactions := c.sessionManager.GetAllFactionsData()
-	allPlayers := c.sessionManager.GetAllPlayersMap() // Well need this method.
+	allPlayers := c.sessionManager.GetAllPlayersMap()
 
 	slices.SortFunc(allFactions, func(a, b *faction.Faction) int {
-		powerA := a.CalculatePower(allPlayers)
-		powerB := b.CalculatePower(allPlayers)
-		return powerB - powerA
+		return b.CalculatePower(allPlayers) - a.CalculatePower(allPlayers)
 	})
 
 	o.Printf("§e--- Top 10 Factions by Power ---")
-	limit := 10
-	if len(allFactions) < limit {
-		limit = len(allFactions)
-	}
+	limit := min(10, len(allFactions))
 	if limit == 0 {
 		o.Printf("§cThere are no factions in the ranking yet.")
 		return
@@ -85,4 +85,54 @@ func (c FactionTop) showFactionTop(o *cmd.Output) {
 		totalPower := f.CalculatePower(allPlayers)
 		o.Printf("§6#%d §f%s §7- §b%d Power", i+1, f.Name, totalPower)
 	}
+}
+
+func openTopPlayersMenu(p *player.Player, s *session.Manager) {
+	allPlayers := s.GetAllPlayersData()
+	slices.SortFunc(allPlayers, func(a, b *playerdata.Data) int {
+		return b.Power - a.Power
+	})
+
+	lines := []string{"§eTop players by power"}
+	limit := min(10, len(allPlayers))
+	if limit == 0 {
+		lines = append(lines, "§cNo players are ranked yet.")
+	} else {
+		for i := 0; i < limit; i++ {
+			data := allPlayers[i]
+			lines = append(lines, fmt.Sprintf("§6#%d §f%s §7- §b%d power", i+1, data.Name, data.Power))
+		}
+	}
+	p.SendForm(form.NewMenu(menuSubmit{}, "Top Players").WithBody(stringsJoin(lines)).WithButtons(
+		form.NewButton("Close", "textures/ui/cancel"),
+	))
+}
+
+func openTopFactionsMenu(p *player.Player, s *session.Manager) {
+	allFactions := s.GetAllFactionsData()
+	allPlayers := s.GetAllPlayersMap()
+	slices.SortFunc(allFactions, func(a, b *faction.Faction) int {
+		return b.CalculatePower(allPlayers) - a.CalculatePower(allPlayers)
+	})
+
+	lines := []string{"§eTop factions by power"}
+	limit := min(10, len(allFactions))
+	if limit == 0 {
+		lines = append(lines, "§cNo factions are ranked yet.")
+	} else {
+		for i := 0; i < limit; i++ {
+			f := allFactions[i]
+			lines = append(lines, fmt.Sprintf("§6#%d §f%s §7- §b%d power §7(%d claims)", i+1, f.Name, f.CalculatePower(allPlayers), f.Claims))
+		}
+	}
+	p.SendForm(form.NewMenu(menuSubmit{}, "Top Factions").WithBody(stringsJoin(lines)).WithButtons(
+		form.NewButton("Close", "textures/ui/cancel"),
+	))
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }

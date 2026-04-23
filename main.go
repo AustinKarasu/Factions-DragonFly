@@ -47,6 +47,18 @@ func main() {
 		log.Error("Failed to load player data into memory", "error", err)
 		return
 	}
+	if err := sessionManager.LoadAllClaims(); err != nil {
+		log.Error("Failed to load claims into memory", "error", err)
+		return
+	}
+	if err := sessionManager.LoadShopData(); err != nil {
+		log.Error("Failed to load shop data", "error", err)
+		return
+	}
+	if err := sessionManager.LoadNPCSlots(); err != nil {
+		log.Error("Failed to load NPC slots", "error", err)
+		return
+	}
 	log.Info("Faction and player caches loaded.")
 
 	// --- REGISTER COMMANDS ---
@@ -64,6 +76,9 @@ func main() {
 
 	log.Info("Factions starting...")
 	srv.Listen()
+	if err := sessionManager.SyncTopNPCs(srv.World()); err != nil {
+		log.Error("Failed to sync faction NPCs", "error", err)
+	}
 
 	// Periodically show borders to viewers.
 	ticker := time.NewTicker(500 * time.Millisecond)
@@ -77,10 +92,27 @@ func main() {
 		}
 	}()
 
+	scoreboardTicker := time.NewTicker(3 * time.Second)
+	go func() {
+		for range scoreboardTicker.C {
+			sessionManager.UpdateAllScoreboards()
+		}
+	}()
+
+	npcTicker := time.NewTicker(15 * time.Second)
+	go func() {
+		for range npcTicker.C {
+			if err := sessionManager.SyncTopNPCs(srv.World()); err != nil {
+				log.Error("Failed to sync faction NPCs", "error", err)
+			}
+		}
+	}()
+
 	// Handle new player joins.
 	for p := range srv.Accept() {
 		p.Handle(handler.NewPlayerHandler(p, sessionManager))
 		sessionManager.GetOrCreatePlayer(p.UUID(), p.Name())
+		sessionManager.RegisterOnlinePlayer(p)
 	}
 }
 
