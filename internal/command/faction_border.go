@@ -23,14 +23,8 @@ func (c FactionBorder) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 
 func handleFactionBorderToggle(p *player.Player, o *cmd.Output, sessionManager *session.Manager) {
 	if newState := sessionManager.ToggleBorderView(p.UUID()); newState {
-		if o != nil {
-			o.Printf("§aTerritory border view enabled.")
-		}
-		p.Message("§aTerritory border view enabled.")
+		reply(p, o, "§aTerritory border view enabled.")
 	} else {
-		if o != nil {
-			o.Printf("§eTerritory border view disabled.")
-		}
-		p.Message("§eTerritory border view disabled.")
+		reply(p, o, "§eTerritory border view disabled.")
 	}
 }

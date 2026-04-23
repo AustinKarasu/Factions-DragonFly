@@ -25,34 +25,21 @@ func (c FactionClaim) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 func handleFactionClaim(p *player.Player, o *cmd.Output, sessionManager *session.Manager) {
 	playerFaction, ok := sessionManager.GetPlayerFaction(p.UUID())
 	if !ok {
-		if o != nil {
-			o.Errorf("§cYou are not in a faction to claim land.")
-		}
-		p.Message("§cYou are not in a faction to claim land.")
+		replyErr(p, o, "§cYou are not in a faction to claim land.")
 		return
 	}
 
 	if playerFaction.Leader != p.UUID() && playerFaction.Coleaders[p.UUID()] == "" {
-		if o != nil {
-			o.Errorf("§cOnly the faction leader or co-leaders can claim new territories.")
-		}
-		p.Message("§cOnly the faction leader or co-leaders can claim new territories.")
+		replyErr(p, o, "§cOnly the faction leader or co-leaders can claim new territories.")
 		return
 	}
 
 	currentChunk := chunk.FromWorldPos(p.Position())
 	if err := sessionManager.ClaimChunk(currentChunk, playerFaction); err != nil {
-		if o != nil {
-			o.Errorf("§cError claiming territory: %v", err)
-		}
-		p.Messagef("§cError claiming territory: %v", err)
+		replyErr(p, o, "§cError claiming territory: %v", err)
 		return
 	}
 
-	msg := "§aTerritory claimed for '" + playerFaction.Name + "' at " + currentChunk.String() + "."
-	if o != nil {
-		o.Printf(msg)
-	}
-	p.Message(msg)
+	reply(p, o, "§aTerritory claimed for '%s' at %s.", playerFaction.Name, currentChunk.String())
 	sessionManager.UpdateScoreboard(p)
 }

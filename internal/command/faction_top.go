@@ -20,7 +20,7 @@ func (TopType) Type() string {
 }
 
 func (TopType) Options(src cmd.Source) []string {
-	return []string{"player", "faction"}
+	return []string{"player", "players", "faction", "factions"}
 }
 
 type FactionTop struct {
@@ -30,20 +30,18 @@ type FactionTop struct {
 }
 
 func (c FactionTop) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
-	if p, ok := src.(*player.Player); ok {
-		switch c.Category {
-		case "player":
+	switch string(c.Category) {
+	case "player", "players":
+		if p, ok := src.(*player.Player); ok {
 			openTopPlayersMenu(p, c.sessionManager)
-		case "faction":
-			openTopFactionsMenu(p, c.sessionManager)
+			return
 		}
-		return
-	}
-
-	switch c.Category {
-	case "player":
 		c.showPlayerTop(o)
-	case "faction":
+	case "faction", "factions":
+		if p, ok := src.(*player.Player); ok {
+			openTopFactionsMenu(p, c.sessionManager)
+			return
+		}
 		c.showFactionTop(o)
 	}
 }
@@ -83,7 +81,7 @@ func (c FactionTop) showFactionTop(o *cmd.Output) {
 	for i := 0; i < limit; i++ {
 		f := allFactions[i]
 		totalPower := f.CalculatePower(allPlayers)
-		o.Printf("§6#%d §f%s §7- §b%d Power", i+1, f.Name, totalPower)
+		o.Printf("§6#%d §f%s §7- §b%d Power §7(%d claims)", i+1, f.Name, totalPower, f.Claims)
 	}
 }
 

@@ -352,6 +352,12 @@ func openFactionMainMenu(p *player.Player, s *session.Manager) {
 		add("Unclaim Here", "textures/ui/icon_trash", func() { handleFactionUnclaim(p, nil, s) })
 		add("Toggle Borders", "textures/ui/world_glyph_color_2x", func() { handleFactionBorderToggle(p, nil, s) })
 		add("Claim Map", "textures/ui/map_icon", func() { p.ExecuteCommand("f map") })
+		add("Update Description", "textures/ui/editIcon", func() {
+			p.Message("§eUsage: /f desc <new description>")
+		})
+		add("Role Help", "textures/ui/book_edit_default", func() {
+			p.Message("§eUse /f promote <player>, /f demote <player>, /f kick <player>")
+		})
 	} else {
 		add("Create Faction", "textures/ui/color_plus", func() {
 			p.SendForm(form.New(newFactionCreateForm(p, s), "Create Faction"))

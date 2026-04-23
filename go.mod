@@ -3,7 +3,7 @@ module github.com/jorgebyte/faction
 go 1.24.2
 
 require (
-	github.com/df-mc/dragonfly v0.10.4
+	github.com/df-mc/dragonfly v0.10.12
 	github.com/go-gl/mathgl v1.2.0
 	github.com/google/uuid v1.6.0
 	github.com/pelletier/go-toml v1.9.5
@@ -24,7 +24,7 @@ require (
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/sandertv/go-raknet v1.14.3-0.20250305181847-6af3e95113d6 // indirect
-	github.com/sandertv/gophertunnel v1.47.2 // indirect
+	github.com/sandertv/gophertunnel v1.55.0 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	golang.org/x/crypto v0.33.0 // indirect
 	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect

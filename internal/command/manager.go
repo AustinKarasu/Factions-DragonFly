@@ -23,6 +23,10 @@ func RegisterAll(s *session.Manager) {
 	overviewCmd := FactionOverview{sessionManager: s}
 	whoCmd := FactionWho{sessionManager: s}
 	mapCmd := FactionMap{sessionManager: s}
+	descCmd := FactionDesc{sessionManager: s}
+	kickCmd := FactionKick{sessionManager: s}
+	promoteCmd := FactionPromote{sessionManager: s}
+	demoteCmd := FactionDemote{sessionManager: s}
 
 	cmd.Register(cmd.New("f", "Command Factions", []string{"fac"},
 		menuCmd,
@@ -42,6 +46,10 @@ func RegisterAll(s *session.Manager) {
 		unclaimCmd,
 		borderCmd,
 		mapCmd,
+		descCmd,
+		kickCmd,
+		promoteCmd,
+		demoteCmd,
 	))
 
 	cmd.Register(cmd.New("shop", "Open the faction shop", nil,

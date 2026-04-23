@@ -35,7 +35,9 @@ type FactionMap struct {
 func (c FactionHelp) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	lines := factionHelpLines()
 	for _, line := range lines {
-		o.Printf(line)
+		if o != nil {
+			o.Printf(line)
+		}
 	}
 	if p, ok := src.(*player.Player); ok {
 		p.SendForm(form.NewMenu(menuSubmit{}, "Faction Help").WithBody(stringsJoin(lines)).WithButtons(
@@ -51,7 +53,7 @@ func (c FactionOverview) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 	playerFaction, ok := c.sessionManager.GetPlayerFaction(p.UUID())
 	if !ok {
-		o.Errorf("§cYou are not in a faction.")
+		replyErr(p, o, "§cYou are not in a faction.")
 		return
 	}
 	sendFactionInfo(playerFaction, o, p)
@@ -64,7 +66,7 @@ func (c FactionWho) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 	playerFaction, ok := c.sessionManager.GetPlayerFaction(p.UUID())
 	if !ok {
-		o.Errorf("§cYou are not in a faction.")
+		replyErr(p, o, "§cYou are not in a faction.")
 		return
 	}
 	lines := []string{fmt.Sprintf("§e%s members (%d)", playerFaction.Name, len(playerFaction.Members))}
@@ -82,7 +84,9 @@ func (c FactionWho) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		lines = append(lines, fmt.Sprintf("§f%s §7- %s §7(%s§7)", name, role, status))
 	}
 	for _, line := range lines {
-		o.Printf(line)
+		if o != nil {
+			o.Printf(line)
+		}
 	}
 	p.SendForm(form.NewMenu(menuSubmit{}, "Faction Members").WithBody(stringsJoin(lines)).WithButtons(
 		form.NewButton("Close", "textures/ui/cancel"),
@@ -118,7 +122,9 @@ func (c FactionMap) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	}
 	lines = append(lines, fmt.Sprintf("§fCurrent chunk: §b%s", current.String()))
 	for _, line := range lines {
-		o.Printf(line)
+		if o != nil {
+			o.Printf(line)
+		}
 	}
 	p.SendForm(form.NewMenu(menuSubmit{}, "Faction Map").WithBody(stringsJoin(lines)).WithButtons(
 		form.NewButton("Close", "textures/ui/cancel"),
@@ -133,15 +139,19 @@ func factionHelpLines() []string {
 		"§f/f create <name> §7- create a faction",
 		"§f/f overview §7- show your faction details",
 		"§f/f who §7- list faction members and online status",
-		"§f/f invite <player> §7- invite a player",
+		"§f/f invite <player> §7- invite an online player",
 		"§f/f join <faction> §7- accept a faction invite",
 		"§f/f leave §7- leave your faction",
 		"§f/f claim §7- claim the current chunk",
 		"§f/f unclaim §7- unclaim the current chunk",
 		"§f/f border §7- toggle chunk border particles",
-		"§f/f map §7- show a small claim map",
-		"§f/f top faction §7- top factions by power",
-		"§f/f top player §7- top players by power",
+		"§f/f map §7- show a nearby claim map",
+		"§f/f top faction|factions §7- top factions by power",
+		"§f/f top player|players §7- top players by power",
+		"§f/f desc <text> §7- update faction description",
+		"§f/f kick <player> §7- remove a faction member",
+		"§f/f promote <player> §7- promote a member to co-leader",
+		"§f/f demote <player> §7- demote a co-leader",
 		"§f/bounty §7- open the bounty board",
 		"§f/shop §7- open the faction shop",
 		"§f/balance, /pay §7- economy commands",
