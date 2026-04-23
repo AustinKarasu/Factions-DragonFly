@@ -59,18 +59,16 @@ This project is licensed under the GNU License.
 <h2>📞 Contact</h2>
 <p>Need help or have suggestions?</p>
 
-<div style="display:flex; flex-direction:column; gap:16px; align-items:center;">
+<p>
+  Discord:
   <a href="https://discord.com/users/1165097093480853634" target="_blank">
-    <img
-      src="https://lanyard.cnrad.dev/api/1165097093480853634?theme=dark&bg=005cff&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Hello"
-      alt="Discord: jorgess__"
-    />
+    jorgess__
   </a>
+</p>
 
+<p>
+  Discord:
   <a href="https://discord.com/users/927640119723323393" target="_blank">
-    <img
-      src="https://lanyard.cnrad.dev/api/927640119723323393?theme=dark&bg=005cff&animated=false&hideDiscrim=true&borderRadius=30px&idleMessage=Hello"
-      alt="Discord: empathyofemptyness"
-    />
+    empathyofemptyness
   </a>
-</div>
+</p>
