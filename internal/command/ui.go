@@ -1,4 +1,4 @@
-package command
+﻿package command
 
 import (
 	"fmt"
@@ -51,15 +51,15 @@ func newFactionCreateForm(p *player.Player, s *session.Manager) factionCreateFor
 func (f factionCreateForm) Submit(submitter form.Submitter, tx *world.Tx) {
 	name := strings.TrimSpace(f.Name.Value())
 	if name == "" {
-		f.player.Message("§cFaction name cannot be empty.")
+		f.player.Message("Ã‚Â§cFaction name cannot be empty.")
 		return
 	}
 	if _, ok := f.sessionManager.GetPlayerFaction(f.player.UUID()); ok {
-		f.player.Message("§cYou are already in a faction.")
+		f.player.Message("Ã‚Â§cYou are already in a faction.")
 		return
 	}
 	if _, ok := f.sessionManager.GetFactionByName(name); ok {
-		f.player.Messagef("§cThe faction '%s' already exists.", name)
+		f.player.Messagef("Ã‚Â§cThe faction '%s' already exists.", name)
 		return
 	}
 	newFaction := faction.New(name, f.player.UUID(), f.player.Name())
@@ -67,10 +67,10 @@ func (f factionCreateForm) Submit(submitter form.Submitter, tx *world.Tx) {
 		newFaction.Description = description
 	}
 	if err := f.sessionManager.CreateFaction(newFaction); err != nil {
-		f.player.Message("§cUnable to create faction right now.")
+		f.player.Message("Ã‚Â§cUnable to create faction right now.")
 		return
 	}
-	f.player.Messagef("§aFaction '%s' created successfully.", newFaction.Name)
+	f.player.Messagef("Ã‚Â§aFaction '%s' created successfully.", newFaction.Name)
 	f.sessionManager.UpdateScoreboard(f.player)
 }
 
@@ -110,24 +110,24 @@ func newBountyPlaceForm(p *player.Player, s *session.Manager) bountyPlaceForm {
 
 func (f bountyPlaceForm) Submit(submitter form.Submitter, tx *world.Tx) {
 	if len(f.targetIDs) == 0 || f.targetIDs[f.Target.Value()] == "" {
-		f.player.Message("§cThere are no valid bounty targets.")
+		f.player.Message("Ã‚Â§cThere are no valid bounty targets.")
 		return
 	}
 	targetID, err := parseUUID(f.targetIDs[f.Target.Value()])
 	if err != nil {
-		f.player.Message("§cThat target is invalid.")
+		f.player.Message("Ã‚Â§cThat target is invalid.")
 		return
 	}
 	amount, err := strconv.Atoi(strings.TrimSpace(f.Amount.Value()))
 	if err != nil || amount <= 0 {
-		f.player.Message("§cEnter a valid bounty amount.")
+		f.player.Message("Ã‚Â§cEnter a valid bounty amount.")
 		return
 	}
 	if err := f.sessionManager.PlaceBounty(f.player.UUID(), targetID, amount); err != nil {
-		f.player.Messagef("§cUnable to place bounty: %v", err)
+		f.player.Messagef("Ã‚Â§cUnable to place bounty: %v", err)
 		return
 	}
-	f.player.Messagef("§aPlaced a $%d bounty on %s.", amount, f.targets[f.Target.Value()])
+	f.player.Messagef("Ã‚Â§aPlaced a $%d bounty on %s.", amount, f.targets[f.Target.Value()])
 	f.sessionManager.UpdateScoreboard(f.player)
 }
 
@@ -153,7 +153,7 @@ func newShopCategoryForm(p *player.Player, s *session.Manager) shopCategoryForm 
 func (f shopCategoryForm) Submit(submitter form.Submitter, tx *world.Tx) {
 	name := strings.TrimSpace(f.Name.Value())
 	if name == "" {
-		f.player.Message("§cCategory name cannot be empty.")
+		f.player.Message("Ã‚Â§cCategory name cannot be empty.")
 		return
 	}
 	sortOrder, _ := strconv.Atoi(strings.TrimSpace(f.Sort.Value()))
@@ -163,10 +163,10 @@ func (f shopCategoryForm) Submit(submitter form.Submitter, tx *world.Tx) {
 		Sort: sortOrder,
 	}
 	if err := f.sessionManager.SaveShopCategory(category); err != nil {
-		f.player.Messagef("§cUnable to save category: %v", err)
+		f.player.Messagef("Ã‚Â§cUnable to save category: %v", err)
 		return
 	}
-	f.player.Messagef("§aSaved shop category '%s'.", category.Name)
+	f.player.Messagef("Ã‚Â§aSaved shop category '%s'.", category.Name)
 	openShopAdminMenu(f.player, f.sessionManager)
 }
 
@@ -217,14 +217,14 @@ func newShopDeleteCategoryForm(p *player.Player, s *session.Manager) shopDeleteC
 func (f shopDeleteCategoryForm) Submit(submitter form.Submitter, tx *world.Tx) {
 	id := f.categoryIDs[f.Category.Value()]
 	if id == 0 {
-		f.player.Message("§cThere are no categories to delete.")
+		f.player.Message("Ã‚Â§cThere are no categories to delete.")
 		return
 	}
 	if err := f.sessionManager.DeleteShopCategory(id); err != nil {
-		f.player.Messagef("§cUnable to delete category: %v", err)
+		f.player.Messagef("Ã‚Â§cUnable to delete category: %v", err)
 		return
 	}
-	f.player.Message("§aShop category deleted.")
+	f.player.Message("Ã‚Â§aShop category deleted.")
 	openShopAdminMenu(f.player, f.sessionManager)
 }
 
@@ -262,14 +262,14 @@ func newShopDeleteItemForm(p *player.Player, s *session.Manager) shopDeleteItemF
 func (f shopDeleteItemForm) Submit(submitter form.Submitter, tx *world.Tx) {
 	id := f.itemIDs[f.Item.Value()]
 	if id == 0 {
-		f.player.Message("§cThere are no items to delete.")
+		f.player.Message("Ã‚Â§cThere are no items to delete.")
 		return
 	}
 	if err := f.sessionManager.DeleteShopItem(id); err != nil {
-		f.player.Messagef("§cUnable to delete item: %v", err)
+		f.player.Messagef("Ã‚Â§cUnable to delete item: %v", err)
 		return
 	}
-	f.player.Message("§aShop item deleted.")
+	f.player.Message("Ã‚Â§aShop item deleted.")
 	openShopAdminMenu(f.player, f.sessionManager)
 }
 
@@ -303,7 +303,7 @@ func newShopItemForm(p *player.Player, s *session.Manager) shopItemForm {
 
 func (f shopItemForm) Submit(submitter form.Submitter, tx *world.Tx) {
 	if len(f.categoryIDs) == 0 || f.categoryIDs[f.Category.Value()] == 0 {
-		f.player.Message("§cCreate a category first.")
+		f.player.Message("Ã‚Â§cCreate a category first.")
 		return
 	}
 	meta, _ := strconv.Atoi(strings.TrimSpace(f.Meta.Value()))
@@ -323,59 +323,157 @@ func (f shopItemForm) Submit(submitter form.Submitter, tx *world.Tx) {
 		Sort:        sortOrder,
 	}
 	if entry.Identifier == "" || entry.Count <= 0 || entry.BuyPrice < 0 || entry.SellPrice < 0 {
-		f.player.Message("§cFill out valid item values before saving.")
+		f.player.Message("Ã‚Â§cFill out valid item values before saving.")
 		return
 	}
 	if err := f.sessionManager.SaveShopItem(entry); err != nil {
-		f.player.Messagef("§cUnable to save item: %v", err)
+		f.player.Messagef("Ã‚Â§cUnable to save item: %v", err)
 		return
 	}
-	f.player.Messagef("§aSaved shop item '%s'.", entry.Display())
+	f.player.Messagef("Ã‚Â§aSaved shop item '%s'.", entry.Display())
 	openShopAdminMenu(f.player, f.sessionManager)
 }
 
 func openFactionMainMenu(p *player.Player, s *session.Manager) {
-	var buttons []form.Button
-	var actionMap = map[string]func() {}
-
-	add := func(label, icon string, action func()) {
-		buttons = append(buttons, form.NewButton(label, icon))
-		actionMap[label] = action
+	buttons := []form.Button{
+		form.NewButton("Faction Dashboard", "textures/ui/multiplayer_glyph_color"),
+		form.NewButton("Territory", "textures/ui/world_glyph_color_2x"),
+		form.NewButton("Members & Roles", "textures/ui/FriendsIcon"),
+		form.NewButton("Rankings", "textures/ui/op"),
+		form.NewButton("Economy & Shop", "textures/ui/icon_best3"),
+		form.NewButton("Help & Commands", "textures/items/book_normal"),
 	}
 
-	if fac, ok := s.GetPlayerFaction(p.UUID()); ok {
-		add("Faction Overview", "textures/ui/multiplayer_glyph_color", func() {
-			sendFactionInfo(fac, nil, p)
-		})
-		add("Members", "textures/ui/FriendsIcon", func() { p.ExecuteCommand("f who") })
-		add("Claim Here", "textures/ui/realms_green_check", func() { handleFactionClaim(p, nil, s) })
-		add("Unclaim Here", "textures/ui/icon_trash", func() { handleFactionUnclaim(p, nil, s) })
-		add("Toggle Borders", "textures/ui/world_glyph_color_2x", func() { handleFactionBorderToggle(p, nil, s) })
-		add("Claim Map", "textures/ui/map_icon", func() { p.ExecuteCommand("f map") })
-		add("Update Description", "textures/ui/editIcon", func() {
-			p.Message("§eUsage: /f desc <new description>")
-		})
-		add("Role Help", "textures/ui/book_edit_default", func() {
-			p.Message("§eUse /f promote <player>, /f demote <player>, /f kick <player>")
-		})
-	} else {
-		add("Create Faction", "textures/ui/color_plus", func() {
-			p.SendForm(form.New(newFactionCreateForm(p, s), "Create Faction"))
-		})
+	if _, ok := s.GetPlayerFaction(p.UUID()); !ok {
+		buttons = []form.Button{
+			form.NewButton("Create Faction", "textures/ui/color_plus"),
+			form.NewButton("Rankings", "textures/ui/op"),
+			form.NewButton("Economy & Shop", "textures/ui/icon_best3"),
+			form.NewButton("Help & Commands", "textures/items/book_normal"),
+		}
 	}
-	add("Top Factions", "textures/ui/op", func() { openTopFactionsMenu(p, s) })
-	add("Top Players", "textures/ui/friend_glyph", func() { openTopPlayersMenu(p, s) })
-	add("Bounties", "textures/ui/icon_import", func() { openBountyMenu(p, s) })
-	add("Faction Shop", "textures/ui/icon_best3", func() { openShopCategoriesMenu(p, s) })
-	add("Command Help", "textures/ui/book_edit_default", func() { p.ExecuteCommand("f help") })
 
 	menu := form.NewMenu(menuSubmit{
 		onSubmit: func(submitter *player.Player, pressed form.Button, tx *world.Tx) {
-			if action := actionMap[pressed.Text]; action != nil {
-				action()
+			switch pressed.Text {
+			case "Faction Dashboard":
+				if fac, ok := s.GetPlayerFaction(submitter.UUID()); ok {
+					sendFactionInfo(fac, nil, submitter)
+				} else {
+					submitter.Message("§eYou are not in a faction yet. Create one to unlock faction tools.")
+				}
+			case "Territory":
+				openFactionTerritoryMenu(submitter, s)
+			case "Members & Roles":
+				openFactionMemberMenu(submitter, s)
+			case "Rankings":
+				openFactionRankingMenu(submitter, s)
+			case "Economy & Shop":
+				openFactionEconomyMenu(submitter, s)
+			case "Help & Commands":
+				sendFactionHelpChat(submitter)
+				openFactionHelpMenu(submitter)
+			case "Create Faction":
+				submitter.SendForm(form.New(newFactionCreateForm(submitter, s), "Create Faction"))
 			}
 		},
-	}, "Faction Control").WithBody("Manage your faction core, economy, and combat systems.").WithButtons(buttons...)
+	}, "Faction Control").WithBody("Manage factions, territory, economy, and rankings from one place.").WithButtons(buttons...)
+	p.SendForm(menu)
+}
+
+func openFactionTerritoryMenu(p *player.Player, s *session.Manager) {
+	menu := form.NewMenu(menuSubmit{
+		onSubmit: func(submitter *player.Player, pressed form.Button, tx *world.Tx) {
+			switch pressed.Text {
+			case "Claim Here":
+				handleFactionClaim(submitter, nil, s)
+			case "Unclaim Here":
+				handleFactionUnclaim(submitter, nil, s)
+			case "Toggle Borders":
+				handleFactionBorderToggle(submitter, nil, s)
+			case "Claim Map":
+				openFactionClaimMapMenu(submitter, s, nil)
+			case "Back":
+				openFactionMainMenu(submitter, s)
+			}
+		},
+	}, "Territory").WithBody("Claim land, review nearby chunks, and manage border visibility.").WithButtons(
+		form.NewButton("Claim Here", "textures/ui/realms_green_check"),
+		form.NewButton("Unclaim Here", "textures/ui/icon_trash"),
+		form.NewButton("Toggle Borders", "textures/ui/world_glyph_color_2x"),
+		form.NewButton("Claim Map", "textures/items/map_filled"),
+		form.NewButton("Back", "textures/ui/cancel"),
+	)
+	p.SendForm(menu)
+}
+
+func openFactionMemberMenu(p *player.Player, s *session.Manager) {
+	menu := form.NewMenu(menuSubmit{
+		onSubmit: func(submitter *player.Player, pressed form.Button, tx *world.Tx) {
+			switch pressed.Text {
+			case "View Members":
+				FactionWho{sessionManager: s}.Run(submitter, nil, tx)
+			case "Role Commands":
+				submitter.Message("§ePromote: /f promote <player>")
+				submitter.Message("§eDemote: /f demote <player>")
+				submitter.Message("§eKick: /f kick <player>")
+			case "Description Help":
+				submitter.Message("§eUpdate faction description with: /f desc <text>")
+			case "Back":
+				openFactionMainMenu(submitter, s)
+			}
+		},
+	}, "Members & Roles").WithBody("View your roster and use management commands for ranks and descriptions.").WithButtons(
+		form.NewButton("View Members", "textures/ui/FriendsIcon"),
+		form.NewButton("Role Commands", "textures/items/book_normal"),
+		form.NewButton("Description Help", "textures/ui/editIcon"),
+		form.NewButton("Back", "textures/ui/cancel"),
+	)
+	p.SendForm(menu)
+}
+
+func openFactionRankingMenu(p *player.Player, s *session.Manager) {
+	menu := form.NewMenu(menuSubmit{
+		onSubmit: func(submitter *player.Player, pressed form.Button, tx *world.Tx) {
+			switch pressed.Text {
+			case "Top Factions":
+				openTopFactionsMenu(submitter, s)
+			case "Top Players":
+				openTopPlayersMenu(submitter, s)
+			case "Back":
+				openFactionMainMenu(submitter, s)
+			}
+		},
+	}, "Rankings").WithBody("Browse power rankings for factions and players.").WithButtons(
+		form.NewButton("Top Factions", "textures/ui/op"),
+		form.NewButton("Top Players", "textures/ui/friend_glyph"),
+		form.NewButton("Back", "textures/ui/cancel"),
+	)
+	p.SendForm(menu)
+}
+
+func openFactionEconomyMenu(p *player.Player, s *session.Manager) {
+	menu := form.NewMenu(menuSubmit{
+		onSubmit: func(submitter *player.Player, pressed form.Button, tx *world.Tx) {
+			switch pressed.Text {
+			case "Bounties":
+				openBountyMenu(submitter, s)
+			case "Faction Shop":
+				openShopCategoriesMenu(submitter, s)
+			case "Balance Help":
+				data := s.GetOrCreatePlayer(submitter.UUID(), submitter.Name())
+				submitter.Messagef("§aCurrent balance: §f$%d", data.Balance)
+				submitter.Message("§eUse /pay <player> <amount> to send money.")
+			case "Back":
+				openFactionMainMenu(submitter, s)
+			}
+		},
+	}, "Economy & Shop").WithBody("Open the shop, review bounties, and manage your money flow.").WithButtons(
+		form.NewButton("Bounties", "textures/ui/icon_import"),
+		form.NewButton("Faction Shop", "textures/ui/icon_best3"),
+		form.NewButton("Balance Help", "textures/items/gold_ingot"),
+		form.NewButton("Back", "textures/ui/cancel"),
+	)
 	p.SendForm(menu)
 }
 
@@ -385,7 +483,7 @@ func openBountyMenu(p *player.Player, s *session.Manager) {
 		if data.Bounty <= 0 {
 			continue
 		}
-		lines = append(lines, fmt.Sprintf("§6#%d §f%s §7- §c$%d", i+1, data.Name, data.Bounty))
+		lines = append(lines, fmt.Sprintf("Ã‚Â§6#%d Ã‚Â§f%s Ã‚Â§7- Ã‚Â§c$%d", i+1, data.Name, data.Bounty))
 	}
 	body := strings.Join(lines, "\n")
 	menu := form.NewMenu(menuSubmit{
@@ -426,13 +524,13 @@ func openShopCategoriesMenu(p *player.Player, s *session.Manager) {
 func openShopItemsMenu(p *player.Player, s *session.Manager, categoryID int64) {
 	category, ok := s.GetShopCategory(categoryID)
 	if !ok {
-		p.Message("§cThat shop category no longer exists.")
+		p.Message("Ã‚Â§cThat shop category no longer exists.")
 		return
 	}
 	items := s.GetShopItemsByCategory(categoryID)
 	buttons := make([]form.Button, 0, len(items))
 	for _, entry := range items {
-		label := fmt.Sprintf("%s\n§aBuy $%d §7/ §6Sell $%d", entry.Display(), entry.BuyPrice, entry.SellPrice)
+		label := fmt.Sprintf("%s\nÃ‚Â§aBuy $%d Ã‚Â§7/ Ã‚Â§6Sell $%d", entry.Display(), entry.BuyPrice, entry.SellPrice)
 		buttons = append(buttons, form.NewButton(label, category.Icon))
 	}
 
@@ -450,22 +548,22 @@ func openShopItemsMenu(p *player.Player, s *session.Manager, categoryID int64) {
 }
 
 func openShopEntryMenu(p *player.Player, s *session.Manager, entry shop.Entry) {
-	body := fmt.Sprintf("§fItem: §b%s\n§fBuy: §a$%d\n§fSell: §6$%d\n§fCount: §e%d", entry.Display(), entry.BuyPrice, entry.SellPrice, entry.Count)
+	body := fmt.Sprintf("Ã‚Â§fItem: Ã‚Â§b%s\nÃ‚Â§fBuy: Ã‚Â§a$%d\nÃ‚Â§fSell: Ã‚Â§6$%d\nÃ‚Â§fCount: Ã‚Â§e%d", entry.Display(), entry.BuyPrice, entry.SellPrice, entry.Count)
 	menu := form.NewMenu(menuSubmit{
 		onSubmit: func(submitter *player.Player, pressed form.Button, tx *world.Tx) {
 			switch pressed.Text {
 			case "Buy":
 				if err := s.BuyShopItem(submitter.UUID(), entry.ID); err != nil {
-					submitter.Messagef("§cBuy failed: %v", err)
+					submitter.Messagef("Ã‚Â§cBuy failed: %v", err)
 					return
 				}
-				submitter.Messagef("§aBought %s for $%d.", entry.Display(), entry.BuyPrice)
+				submitter.Messagef("Ã‚Â§aBought %s for $%d.", entry.Display(), entry.BuyPrice)
 			case "Sell":
 				if err := s.SellShopItem(submitter.UUID(), entry.ID); err != nil {
-					submitter.Messagef("§cSell failed: %v", err)
+					submitter.Messagef("Ã‚Â§cSell failed: %v", err)
 					return
 				}
-				submitter.Messagef("§aSold %s for $%d.", entry.Display(), entry.SellPrice)
+				submitter.Messagef("Ã‚Â§aSold %s for $%d.", entry.Display(), entry.SellPrice)
 			}
 		},
 	}, entry.Display()).WithBody(body).WithButtons(
@@ -508,3 +606,4 @@ func parseUUID(v string) (uuid.UUID, error) {
 	}
 	return uuid.Parse(v)
 }
+

@@ -883,30 +883,6 @@ func (m *Manager) TopFactionsByPower(limit int) []*faction.Faction {
 
 // SyncTopNPCs respawns the top-faction podium NPCs in the given world.
 func (m *Manager) SyncTopNPCs(w *world.World) error {
-	if w == nil {
-		return nil
-	}
-
-	slots := m.getNPCSlots()
-	factions := m.TopFactionsByPower(len(slots))
-	assignments := make(map[uuid.UUID]uuid.UUID)
-
-	for i, slot := range slots {
-		if slot.WorldName != "" && slot.WorldName != w.Name() {
-			continue
-		}
-		var fac *faction.Faction
-		if i < len(factions) {
-			fac = factions[i]
-		}
-		if err := m.respawnNPCForSlot(w, slot, fac, assignments); err != nil {
-			return err
-		}
-	}
-
-	m.mu.Lock()
-	m.npcAssignments = assignments
-	m.mu.Unlock()
 	return nil
 }
 
@@ -989,11 +965,5 @@ func (m *Manager) respawnNPCForSlot(w *world.World, slot npc.Slot, fac *faction.
 
 // NPCFaction returns the faction assigned to a podium NPC entity.
 func (m *Manager) NPCFaction(entityID uuid.UUID) (*faction.Faction, bool) {
-	m.mu.RLock()
-	factionID, ok := m.npcAssignments[entityID]
-	m.mu.RUnlock()
-	if !ok {
-		return nil, false
-	}
-	return m.GetFactionByID(factionID)
+	return nil, false
 }

@@ -1,6 +1,6 @@
 module github.com/jorgebyte/faction
 
-go 1.24.2
+go 1.24
 
 require (
 	github.com/df-mc/dragonfly v0.10.12

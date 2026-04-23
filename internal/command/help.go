@@ -33,16 +33,14 @@ type FactionMap struct {
 }
 
 func (c FactionHelp) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
-	lines := factionHelpLines()
-	for _, line := range lines {
+	if p, ok := src.(*player.Player); ok {
+		sendFactionHelpChat(p)
+		openFactionHelpMenu(p)
+	}
+	for _, line := range factionHelpLines() {
 		if o != nil {
 			o.Printf(line)
 		}
-	}
-	if p, ok := src.(*player.Player); ok {
-		p.SendForm(form.NewMenu(menuSubmit{}, "Faction Help").WithBody(stringsJoin(lines)).WithButtons(
-			form.NewButton("Close", "textures/ui/cancel"),
-		))
 	}
 }
 
@@ -98,6 +96,37 @@ func (c FactionMap) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 	if !ok {
 		return
 	}
+	openFactionClaimMapMenu(p, c.sessionManager, o)
+}
+
+func sendFactionHelpChat(p *player.Player) {
+	for _, line := range factionHelpLines() {
+		p.Message(line)
+	}
+}
+
+func openFactionHelpMenu(p *player.Player) {
+	p.SendForm(form.NewMenu(menuSubmit{}, "Faction Help").WithBody(stringsJoin(factionHelpLines())).WithButtons(
+		form.NewButton("Close", "textures/ui/cancel"),
+	))
+}
+
+func openFactionClaimMapMenu(p *player.Player, sessionManager *session.Manager, o *cmd.Output) {
+	lines := factionMapLines(p, sessionManager)
+	for _, line := range lines {
+		if o != nil {
+			o.Printf(line)
+		}
+	}
+	for _, line := range lines {
+		p.Message(line)
+	}
+	p.SendForm(form.NewMenu(menuSubmit{}, "Faction Map").WithBody(stringsJoin(lines)).WithButtons(
+		form.NewButton("Close", "textures/ui/cancel"),
+	))
+}
+
+func factionMapLines(p *player.Player, sessionManager *session.Manager) []string {
 	current := chunk.FromWorldPos(p.Position())
 	lines := []string{"§eClaim map legend: §aYours §cClaimed §7Wilderness"}
 	for z := current.Z - 1; z <= current.Z+1; z++ {
@@ -105,8 +134,8 @@ func (c FactionMap) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		for x := current.X - 1; x <= current.X+1; x++ {
 			pos := chunk.Pos{X: x, Z: z}
 			marker := "§7[ ]"
-			if ownerID, ok := c.sessionManager.GetClaimOwner(pos); ok {
-				if fac, ok := c.sessionManager.GetPlayerFaction(p.UUID()); ok && fac.ID == ownerID {
+			if ownerID, ok := sessionManager.GetClaimOwner(pos); ok {
+				if fac, ok := sessionManager.GetPlayerFaction(p.UUID()); ok && fac.ID == ownerID {
 					marker = "§a[X]"
 				} else {
 					marker = "§c[X]"
@@ -121,14 +150,7 @@ func (c FactionMap) Run(src cmd.Source, o *cmd.Output, tx *world.Tx) {
 		lines = append(lines, strings.Join(row, " "))
 	}
 	lines = append(lines, fmt.Sprintf("§fCurrent chunk: §b%s", current.String()))
-	for _, line := range lines {
-		if o != nil {
-			o.Printf(line)
-		}
-	}
-	p.SendForm(form.NewMenu(menuSubmit{}, "Faction Map").WithBody(stringsJoin(lines)).WithButtons(
-		form.NewButton("Close", "textures/ui/cancel"),
-	))
+	return lines
 }
 
 func factionHelpLines() []string {

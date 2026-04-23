@@ -76,10 +76,6 @@ func main() {
 
 	log.Info("Factions starting...")
 	srv.Listen()
-	if err := sessionManager.SyncTopNPCs(srv.World()); err != nil {
-		log.Error("Failed to sync faction NPCs", "error", err)
-	}
-
 	// Periodically show borders to viewers.
 	ticker := time.NewTicker(500 * time.Millisecond)
 	go func() {
@@ -96,15 +92,6 @@ func main() {
 	go func() {
 		for range scoreboardTicker.C {
 			sessionManager.UpdateAllScoreboards()
-		}
-	}()
-
-	npcTicker := time.NewTicker(15 * time.Second)
-	go func() {
-		for range npcTicker.C {
-			if err := sessionManager.SyncTopNPCs(srv.World()); err != nil {
-				log.Error("Failed to sync faction NPCs", "error", err)
-			}
 		}
 	}()
 
