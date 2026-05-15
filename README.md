@@ -68,7 +68,7 @@ This project is licensed under the GNU License.
 
 <p>
   Discord:
-  <a href="https://discord.com/users/927640119723323393" target="_blank">
-    empathyofemptyness
+  <a href="https://discord.com/users/1143607728451878993" target="_blank">
+   aayankarasu
   </a>
 </p>
